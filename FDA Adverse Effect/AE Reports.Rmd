@@ -1,0 +1,186 @@
+---
+title: "Advers Event Reports"
+author: "Yihun Zeleke"
+date: "`r Sys.Date()`"
+output: 
+    rmdformats::downcute:
+      code_folding: hide
+      toc_depth: 3
+    self_contained: true
+    thumbnails: true
+    lightbox: true
+    gallery: false
+    highlight: tango
+    df_print: paged
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+## The Project:
+
+***FDA is the Federal government of US which approves, follows and administered food and drugs for the several years. As a result the federal institutes receives claims from the customers about the foods and drugs about what the customers experience adverse effect. The data set set is publicly available FDA official site.***
+
+### **Report ID**
+
+### Total number of reports reported to FDA
+
+From 2013 - 2019, FDA received *130082* reports from the customers one or more adverse event about the drugs and foods. But for this analysis I keep only 13,000 observations will keep for further analysis for time, computer performance issues and removed all *NULL* values in the data set.
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(lubridate)
+library(ggplot2)
+library(tidytext)
+library(tm)
+library(stringr)
+fda <- data.table::fread("fda_combined.csv")
+```
+
+### Does total number of reports corresponds to total number of patients facing issues?
+
+The customer may report many times for one product. So the total number of reports may not corresponds to the total number of patient facing. Let see the duplication of cases by their `report_id`.
+
+For example the *179852, 190041, 117851, 177086, 106801,and 210074 customers reported more than 10 times.*
+
+```{r}
+length(unique(fda$report_id))
+head(count(fda, report_id, sort = T))
+```
+
+### Are there any chances of duplicate reports since it is reported either by the patient/consumer or their HCP (health care professional/doctor)
+
+As we see the cases in above result there chance of duplication of a customer while reporting for the one product as many times. There are about *3463* reports were duplicated
+
+```{r}
+fda <- fda %>% 
+  arrange(caers_created_date)
+nrow(fda[duplicated(fda$report_id),])
+```
+
+### Are there reports of patients who have consumed multiple products and experienced adverse events? Can something like a system could be built to identify them?
+
+Now let's check that patients who have consumed multiple products and experienced adverse effects. The first product consumed and reported and by the customer is `product_code` *54.*
+
+```{r}
+fda %>% 
+  group_by(product_code,report_id ) %>% 
+  summarise(count = n()) %>% 
+  #arrange(desc(count)) %>%
+  filter(count >= 3) %>% 
+  slice_max(order_by = count, n = 3) %>% 
+  arrange(desc(count))
+ 
+```
+
+## CAERS Created Date
+
+### What is the change in number of reports reported against year?
+
+### Has there been any drastic change in numbers? If so why?
+
+### Find the difference between the time the report was created and the actual time of Adverse event and check the difference in time for different age range.
+
+### Which day/week of the week/month the AES reported are more in numbers? Is there a tendency/trend in people to report as the week goes on (reasons might be- trying to pass time on weekends, bad weekend, hangover and over eating on weekends, start of the week)
+
+## Date of Event
+
+### Has the number of adverse events increased or decreased over years?
+
+### If it has increased, is it because more events are occurring or more events are being reported? And vice versa (in case it has decreased)
+
+## Product Type
+
+### Which type (suspect/concomitant) has more counts of adverse events?
+
+### Can a causality be concluded on suspect/concomitant wrt to adverse events (MedDRA)
+
+## Product/Product Code
+
+### Total number of products reported
+
+### Most common product against which Adverse events has been reported maximum
+
+### Does the most common product in the list means the one which gets sold much?
+
+### Has the report for the most common product has been consistent over the years (2004-2019, Mar)...Can do Time series
+
+### Form clusters based on outcome
+
+### A patient can have one Report ID with various Adverse events, product. So here, classify products based on Report Id for individual patients.
+
+### Predict and forecast products sold
+
+### Occurrences of common product based on key word in Description
+
+### Most selling product and least selling product
+
+### Which Product code has the maximum number of products assigned?
+
+### How has the product evolved since 2004 to present? Has there been a change in taste, selection of product etc?
+
+## Description
+
+### What was the most common 'Description' wrt to Adverse event?
+
+### Sentiment analysis of Product description
+
+### Does each product description correspond to individual product code and product?
+
+## Patient Age
+
+### Which age was the most affected ones in the list?
+
+### Find the min and max age, and then see - Can age be grouped into Age group class and check for the most affected group?
+
+### What was the most common Adverse event in all the age group? Was the Adverse event against the same product or different in different age group? Which type of customers bought it more?
+
+### Which age range seems to be the most dangerous?
+
+### How babies of different age are affected? Is it because they really experience AEs or is it because their parents are worried?
+
+### Which age group suffers the most severe outcomes?
+
+## Sex
+
+### Which gender has reported more Adverse events?
+
+### Common AE reported by male and females respectively
+
+### Common product against which AE has been reported (both male and female)
+
+## MedDRA Preferred Terms
+
+### Total number of adverse events reported
+
+### The most common AE/Symptoms
+
+### Did all the common symptoms take place due to the same product?
+
+### AE as per year/month/weekday
+
+### AEs per product
+
+### Can the number of AEs reported be predicted based on present?
+
+### Based on MedDRA PT term classify these based on the 'System Organ Class'
+
+### Were the reported adverse events more or the number of patients/consumers more?
+
+## Outcomes
+
+### Some of the outcome seems to be interlinked. Need to find out such types and find out the best possible way to classify
+
+### Classification can be done based on severity
+
+### Clustering based on serious and non-serious.
+
+### Which age group has the maximum serious counts? Can the count be predicted based on present? (Maybe Null hypothesis)
+
+### The data has mentioned about the condition of patient and has also stated for some if treatment was offered. Classification/Clustering can be made based on this, as in which age group preferred treatment etc.
+
+### Check if SVM works a model designed.
