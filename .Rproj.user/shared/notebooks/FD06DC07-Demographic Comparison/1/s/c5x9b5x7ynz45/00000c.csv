@@ -1,0 +1,7 @@
+"0",""
+"0","wb_eth %>% "
+"0","  filter(`Indicator Name` == ""Population, female""| `Indicator Name`==""Population, male"") %>% "
+"0","  select(-`Country Name`) %>% "
+"0","  pivot_longer(cols = `1960`:`2020`, names_to = ""year"", values_to = ""population"") %>% "
+"0","  mutate(pop_group = ifelse(str_detect(`Indicator Name`, ""f""), ""Femal"", ""Male"")) %>% "
+"0","  drop_na()"

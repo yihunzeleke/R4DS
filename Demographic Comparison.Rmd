@@ -1,0 +1,181 @@
+---
+title: "Socio-Demographic Trends of Ethiopia"
+author: "Yihun Zeleke"
+date: "1/16/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Project Overview
+
+<p> Ethiopia is located in East Africa one the oldest nations in the world. Ethiopia has faced different natural and human made problems. The country one on the former members of the United Nations and the founder of the African Union. One of the UnColonized nations in the world history. Ethiopia implemented different economic and social strategies for the development of its nations. But this programs were not successful until the Mellinium Development Goals (MDG).As the former member of the World Bank organization there are a lot of indicators from 1960. Today I will look the most recent data about Ethiopia the data set can be found [here.](https://api.worldbank.org/v2/en/country/ETH?downloadformat=csv)</p>
+![](https://julietetelandresen.com/wp-content/uploads/2018/06/5957855129_64facef1d9_o-1.jpg)
+
+<p>In Ethiopia as the developing nation, most of the population residence in the rural parts of the country. Event though increasing in urbanization in the country but 85% of the population is still living in rural areas. </p>
+
+**Loading Libraries**
+```{r}
+library(tidyverse)
+library(readr)
+library(plotly) # wrapping the ggplot2 graphs
+```
+**Importing the data**
+```{r}
+wb_eth <- read_csv("C:/Users/yihun/Downloads/API_ETH_DS2_en_csv_v2_1930073/wb_eth.csv")
+```
+
+## Data Analysis 
+### Population Overview
+```{r}
+wb_eth %>% 
+  filter(`Indicator Name` == "Rural population growth (annual %)") %>% 
+  select(-`Country Name`) %>% 
+  pivot_longer(cols = `1960`:`2020`, names_to = "year", values_to = "pop_growth") %>% 
+  drop_na()
+  
+```
+```{r}
+wb_eth %>% 
+  filter(`Indicator Name` == "Rural population growth (annual %)") %>% 
+  select(-`Country Name`) %>% 
+  pivot_longer(cols = `1960`:`2020`, names_to = "year", values_to = "pop_growth") %>% 
+  drop_na() %>% 
+  filter(year >= "2000") %>% 
+  mutate(year = factor(year)) %>% 
+  ggplot(aes(x = year, y = pop_growth))+
+  geom_line(aes(group = 1), color = "red")+
+  geom_point()+
+  labs(title = "Ethiopia's rural population growth (annual %)",
+       y = "population growth", x = "", caption = "data source:https://data.worldbank.org/country/Ethiopia")+
+  theme_bw()
+ 
+```
+<p> As shown from the above graph the rural population is declined from 2000 downwards because Ethiopia was drafted and implemented the population policy to reduce the number of children in the each household.</p>
+
+
+
+
+```{r}
+
+wb_eth %>% 
+  filter(`Indicator Name` == "Population, female"| `Indicator Name`=="Population, male") %>% 
+  select(-`Country Name`) %>% 
+  pivot_longer(cols = `1960`:`2020`, names_to = "year", values_to = "population") %>% 
+  mutate(pop_group = ifelse(str_detect(`Indicator Name`, "f"), "Female", "Male")) %>% 
+  drop_na()
+
+
+
+```
+
+<p> Ethiopia's population is increasing dynamically with huge number of youth. The population of Ethiopia is the second most populous country in Africa continent next to Nigeria.</p>
+
+```{r}
+wb_eth %>% 
+  filter(`Indicator Name` == "Population, female"| `Indicator Name`=="Population, male") %>% 
+  select(-`Country Name`) %>% 
+  pivot_longer(cols = `1960`:`2020`, names_to = "year", values_to = "population") %>% 
+  mutate(pop_group = ifelse(str_detect(`Indicator Name`, "f"), "Female", "Male")) %>% 
+  drop_na() %>% 
+  filter(year >= "2010") %>% 
+  mutate(year = as.factor(year), population = population/1000000) %>% 
+  ggplot(aes(x = year, y = population, color = pop_group))+
+  geom_line(aes(group = 1))+
+  geom_point()+
+  labs(title = "Ethiopian population by sex",
+       y = "Populaton in million", x = "", caption = "data source:https://data.worldbank.org/country/Ethiopia")+
+  ggthemes::theme_economist_white()
+  
+```
+
+<p> As a growing nation there are different actors who support the Ethiopian development such world back, European Union, and Other NGOs. Let's look what looks like the lending rate in percent over time.This lending rate is depending on different the countries economic activities, the countries political ideology with western countries. </p>
+```{r}
+wb_eth %>% 
+  filter(`Indicator Name` == "Lending interest rate (%)") %>% 
+  select(-`Country Name`) %>% 
+  pivot_longer(cols = `1960`:`2020`, names_to = "year", values_to = "Rate") %>% 
+  drop_na() 
+  
+
+```
+Let's take a look the working group of the population age 15-64.
+```{r}
+wb_eth %>% 
+  filter(`Indicator Name` == "Population ages 15-64, female"|`Indicator Name` == "Population ages 15-64, male") %>% 
+  select(-`Indicator Name`, -`Country Name`) %>% 
+  summarise(across(c(`1960`:`2019`), ~ sum(.x, na.rm = TRUE))) %>% 
+  pivot_longer(cols =`1960`:`2019`, names_to = "year", values_to = "population")
+  
+```
+```{r}
+ggplotly(
+wb_eth %>% 
+  filter(`Indicator Name` == "Population ages 15-64, female"|`Indicator Name` == "Population ages 15-64, male") %>% 
+  select(-`Indicator Name`, -`Country Name`) %>% 
+  summarise(across(c(`1960`:`2019`), ~ sum(.x, na.rm = TRUE))) %>% 
+  pivot_longer(cols =`1960`:`2019`, names_to = "year", values_to = "population") %>% 
+  filter(year >= 2000) %>% 
+  mutate(year = factor(year), round(population/1000000,2)) %>% 
+  ggplot(aes(factor(year), population))+
+  geom_line(aes(group = 1), color = "#bb4411")+
+  geom_point(color = "#0a470a")+
+  scale_y_continuous(labels = scales::comma)+
+  theme_bw()+
+  labs(title = "Working group population (Age 15-64)", x = "", 
+       y = "Pupulation in Millions", color = "blue") +
+  theme(axis.text.x =  element_text(angle = 45, color = "blue", size = 8, face = "italic")) 
+
+) %>% 
+  config(displayModeBar = F) %>% 
+  layout(annotations = 
+  list(x = 1, y = -0.14, text = "data source:https://data.worldbank.org/country/Ethiopia", 
+      showarrow = F, xref='paper', yref='paper', 
+      xanchor='right', yanchor='auto', xshift=0, yshift=0,
+      font=list(size= 9, color="#47708e")))
+  
+```
+
+
+
+
+### Economic Overview
+```{r}
+ggplotly(
+
+wb_eth %>% 
+  filter(`Indicator Name` == "Lending interest rate (%)") %>% 
+  select(-`Country Name`) %>% 
+  pivot_longer(cols = `1960`:`2020`, names_to = "year", values_to = "Rate") %>% 
+  drop_na() %>% 
+  mutate(year == as.factor(year)) %>% 
+  ggplot(aes(x = year, y = Rate, color = "red"))+
+  geom_line(aes(group = 1))+
+  geom_point()+
+  labs(title = "Lending interest rate (%)",
+       y = "Rate", x = "", caption = "data source:https://data.worldbank.org/country/Ethiopia")+
+  theme_bw()+
+  theme(axis.text.x =  element_text(angle = 45, size = 8, face = "italic")), tooltip = c('year', 'Rate')
+) %>% 
+  config(displayModeBar = F) %>% 
+  layout(annotations = 
+  list(x = 1, y = -0.14, text = "data source:https://data.worldbank.org/country/Ethiopia", 
+      showarrow = F, xref='paper', yref='paper', 
+      xanchor='right', yanchor='auto', xshift=0, yshift=0,
+      font=list(size= 9, color="#47708e")), showlegend = FALSE)
+  
+```
+
+<p> As we from the above graph the interest rate was high during the years which the country in political instability the TPLF rebellion group controls the country in 1991 and the war between Ethiopia and Eritrea 1998-2000.</p>
+
+
+```{r}
+
+```
+
+
+
+
+
