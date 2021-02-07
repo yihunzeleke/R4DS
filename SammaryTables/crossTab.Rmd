@@ -1,0 +1,31 @@
+---
+title: "Cross Tabulation"
+author: "Yihun Zeleke"
+date: "2/6/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = F, warning = F)
+```
+
+```{r}
+library(gmodels)
+library(tidyverse)
+```
+
+```{r}
+df <- mtcars %>% 
+  mutate(cyl = factor(cyl), 
+         gear = factor(gear),
+         transmision = ifelse(am == 0, "automatic", "manual"))
+
+
+CrossTable(df$cyl, df$transmision, prop.r = F, prop.chisq= F, dnn = c("Cyl", "Transmision"), format = "SPSS")
+```
+
+#### Description
+
+-   The first cell is the number of counts for each category.
+
+-   The second cell as a percentage is the total number of the category for that column. For example `15.789%` indicates that from cylinders category 4 is from automatic transmission.

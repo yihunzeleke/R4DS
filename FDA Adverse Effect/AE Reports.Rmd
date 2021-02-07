@@ -38,7 +38,9 @@ library(ggplot2)
 library(tidytext)
 library(tm)
 library(stringr)
-fda <- data.table::fread("fda_combined.csv")
+
+fda_combined <- data.table::fread("FDA Adverse Effect/fda_combined.csv")
+
 ```
 
 ### Does total number of reports corresponds to total number of patients facing issues?
