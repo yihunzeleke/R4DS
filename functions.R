@@ -2,7 +2,7 @@
 library(dplyr)
 library(readr)
 library(lubridate)
-cvid_cases <- read_csv("https://data.kcmo.org/api/views/nfta-sjx6/rows.csv?accessType=DOWNLOAD") %>% janitor::clean_names()
+cvid_cases <- read_csv("https://data.kcmo.org/api/views/nfta-sjx6/rows.csv?accessType=DOWNLOAD")
 
 cvid_cases <- cvid_cases %>% 
   mutate(new_date = mdy_hms(date))
