@@ -128,13 +128,5 @@ openxlsx::write.xlsx(alldata_summmary, "pop-zipcode//Clean Data//ZIP-CODE.xlsx")
 
 
 
-
-
-
-
-
-
-
-
   
   
