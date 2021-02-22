@@ -127,6 +127,31 @@ dir(temp_data)
 openxlsx::write.xlsx(alldata_summmary, "pop-zipcode//Clean Data//ZIP-CODE.xlsx")
 
 
+#==# Census Reporter
+
+unzip("pop-zipcode/acs2019_5yr_B01003_86000US65230.zip",
+      exdir = "pop-zipcode/missouri_shapefile", junkpaths = T,
+      overwrite = T)
+
+library(sf)
+library(tmap)
+library(tmaptools)
+
+zipCode_geo <- sf::st_read("pop-zipcode/missouri_shapefile/acs2019_5yr_B01003_86000US65230.shp")
+
+zipCode_geo <- zipCode_geo %>% 
+  filter(name != "Missouri"& name %in% zip_list)
+
+zipCode_geo_kcmo <- zipCode_geo %>% 
+  filter(name != "Missouri"& name %in% zip_list)
+
+qtm(zipCode_geo_kcmo)+
+  tm_legend(show = F)
+
+write_sf(zipCode_geo_kcmo, "C:/Users/yihun/Documents/ArcGIS/Projects/dashboard/zipcode_pop/zipcode_pop.shp")
+
+
+
 
   
   
