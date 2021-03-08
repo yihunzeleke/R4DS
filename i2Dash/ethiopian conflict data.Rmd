@@ -1,0 +1,53 @@
+---
+title: "Ethiopia Conflict"
+author: "Yihun Zeleke"
+date: "2/28/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Data source: https://data.world/datasets/ethiopia
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(readxl)
+
+conflict_data <- read_csv("https://data.humdata.org/dataset/0cfc477e-8dc4-43d3-83e7-0b74e29e918c/resource/129458e4-00ef-47fe-ac77-523d773d91be/download/conflict_data_eth.csv")
+
+url <- "https://data.humdata.org/dataset/23c706f6-4b72-4a38-9c64-f935cd4bd67e/resource/194deeaa-8859-48eb-8751-76767095a98d/download/energy-and-mining_eth.csv"
+energy_data <- read_csv(url)
+
+
+#==# clean data
+conflict_data <- conflict_data %>% 
+  drop_na(id) %>% 
+  filter(year >= 1993) # after Ethio-Ertrea war
+
+conflict_data
+```
+
+
+```{r}
+conflict_data %>% 
+  filter(year >= 2010) %>% 
+  group_by(year, state = adm_1) %>% 
+  summarise(government =sum(deaths_a, na.rm = T),
+           otherside = sum(deaths_b, na.rm = T)) %>% 
+  drop_na() %>% 
+  ungroup() %>% 
+  pivot_longer(cols= -c(year, state),names_to = "source_death", values_to = "deaths") %>% 
+  filter(deaths > 0) %>% 
+  ggplot(aes(state, deaths,fill = source_death))+
+  geom_point()
+  # coord_flip()+
+  # facet_wrap(~year)
+
+  
+```
+
+
+

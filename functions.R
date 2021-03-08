@@ -5,7 +5,8 @@ library(lubridate)
 cvid_cases <- read_csv("https://data.kcmo.org/api/views/nfta-sjx6/rows.csv?accessType=DOWNLOAD")
 
 cvid_cases <- cvid_cases %>% 
-  mutate(new_date = mdy_hms(date))
+  mutate(new_date = mdy_hms(Date)) %>% 
+  janitor::clean_names()
 
 
 cvid_cases %>% 
@@ -26,8 +27,8 @@ weekly_cases <- function(df, c_date,c_cases){
 covidTrends_covid <- weekly_cases(cvid_cases, new_date,  new_cases)
 
 
-writeFun <- function(cdata1, cdata2,...){
-  sheetList <- list(cdata1,cdata2)
+writeFun <- function(cdata1, cdata2,cdata3,...){
+  sheetList <- list(cdata1,cdata2,cdata3)
   list_name <- c("cdata1", "cdata2","cdata3")
   names(sheetList) <- list_name
   if (length(sheetList)!= length(list_name)){
@@ -38,7 +39,7 @@ writeFun <- function(cdata1, cdata2,...){
   openxlsx::write.xlsx(sheetList, "tables.xlsx")
 }
 
-writeFun(covidTrends, covidTrends_covid,covidTrends)
+writeFun(covidTrends_covid, covidTrends_covid,covidTrends_covid)
 
 
 
