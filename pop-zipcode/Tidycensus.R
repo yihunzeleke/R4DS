@@ -100,16 +100,19 @@ pop_byzip_sex_race_alone <-  get_acs(geography = "zcta",year = 2019,
   left_join(acs_variables, by = c("variable"="name")) 
 
 #==# remove duplicate white race
+
 pop_byzip_sex_race_alone <- pop_byzip_sex_race_alone %>% 
   filter(str_detect(variable, "^B01001H_", negate = T))
 
 #==# clean data
+
 zip_group <- pop_byzip_sex_race_alone %>% 
   mutate(race_category = str_remove_all(concept, "SEX BY AGE") %>% str_replace_all(.,"[[:punct:]]","")) %>% 
   mutate(age_category = str_remove_all(label, ":") %>% str_replace_all(.,"[[:punct:]]"," ")) %>% 
   select(GEOID, estimate, age_category, race_category)
 
 #==# grouping and summarizing
+
 zip_group_wide <- zip_group %>% 
   group_by(GEOID,age_category, race_category) %>% 
   summarise(estimate = sum(estimate)) %>% 
@@ -117,6 +120,7 @@ zip_group_wide <- zip_group %>%
   pivot_wider(names_from = race_category, values_from = estimate)
 
 #==# split data by zip code and write to csv
+
 alldata_summmary <- split(zip_group_wide, zip_group_wide$GEOID)
 temp_data <- 'C://Users//yihun//Documents//R4DS//pop-zipcode//Clean Data//temp_data'
 paths <- file.path(temp_data, paste0("ZIP-", names(alldata_summmary), ".xlsx"))
@@ -124,6 +128,7 @@ walk2(alldata_summmary, paths, openxlsx::write.xlsx , row.names = F)
 dir(temp_data)
 
 #==# write data: with sheet name zip-code
+
 openxlsx::write.xlsx(alldata_summmary, "pop-zipcode//Clean Data//ZIP-CODE.xlsx")
 
 
