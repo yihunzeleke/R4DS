@@ -8,22 +8,23 @@ kcmoshp <- sf::read_sf("KCMOZIPCODE/KCMOZIPCODE.shp")
 
 
 full_data <- kcmoshp %>% 
-  full_join(covid, by = c("ZCTA5CE10" = "ZipCode"))
+  full_join(LifeExp, by = c("ZCTA5CE10" = "ZIP-Code")) %>% 
+  mutate(LifeExp = ifelse(LifeExp == 0, NA, LifeExp))
 
 tmap_mode("view")
 
 tm_shape(full_data) +
-  tm_polygons("Cases")
+  tm_polygons("LifeExp")
 
 tm_basemap(server = "OpenStreetMap.HOT")+
-  tm_shape(full_data) +
-  tm_polygons(c("Cases"), style = "jenks", n = 3,
-              popup.vars = c("Cases",
-                             "Crude Rate per 100,000",
-                             "Total Residents Tested",
-                             "Two-Week Total Tested" ,
-                             "Two-Week Total Cases"),
+  tm_shape(full_data)+
+  tm_polygons(c("LifeExp"), style = "jenks", n = 5,
               title = "Total Cases",
-              palette = "YlGnBu", contrast = 1)
+              palette = "Greys", main = "Title")+
+  tm_text("ZCTA5CE10", size = 0.5)+
+  tm_layout(legend.outside = F,  legend.just = "center")
+
+
+
 
 
