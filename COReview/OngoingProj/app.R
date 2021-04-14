@@ -8,7 +8,7 @@ library(flexdashboard)
 library(tmap)
 library(ggpubr) # for getting color brewer get_palette()
 library(plotly)
-
+library(echarts4r)
 
 #==# Data
 
@@ -38,11 +38,11 @@ ui <- dashboardPage(
   dashboardHeader(title = "KCMO COVID19 Dashboard"),
   dashboardSidebar(
     sidebarMenu( 
-      menuItem(strong("Cases"), tabName = "cov_case", icon = icon("plus"))
+      menuItem(strong("Cases"), tabName = "cov_case", icon = icon("plus")),
       #menuItem(strong("Hospitalizations"), tabName = "cov_hosp", icon = icon("hospital")),
       #menuItem(strong("Deaths"),  tabName = "cov_death", icon = icon("heart")),
       #menuItem(strong("Vaccine"), tabName = "cov_vax", icon = icon("vaccine")),
-      #menuItem(strong("Resources", "notes", icon = icon("pencil")))
+      menuItem(strong("Resources"), tabName =  "notes", icon = icon("pencil"))
     )
   ),
   
@@ -61,7 +61,22 @@ ui <- dashboardPage(
               fluidRow(
                 box(title = "Cumulative Number of Individuals Tested Positive", echarts4rOutput("case_commulative"), background = "navy")
               )
-    )
+    ),
+    tabItem(tabName = "notes",
+            fluidRow(
+              box(title = "Resources and Notes", uiOutput("technotes"))
+            ),
+            fluidRow(
+              column(4, thumbnail_label(image = 'tweet.jpg', label = 'Application 1',
+                                        content = 'Havana brown cornish rex bombay but bombay,
+                                              but havana brown devonshire rex and devonshire rex.
+                                              Tomcat egyptian mau. Cornish rex sphynx sphynx yet
+                                              cougar and panther. Panther siberian. Lynx munchkin
+                                              american shorthair. Norwegian forest. ',
+                                        button_link = 'https://www.kcmo.gov/city-hall/departments/health/coronavirus', button_label = 'Click me')
+              )
+            )
+            )
     )
     )
   )
@@ -105,6 +120,65 @@ output$case_rate_zip <- renderTmap({
                 breaks = c(0,1000,4500, 6750, 9000, Inf))+
     tm_layout()+
     tm_view(view.legend.position = c("left","bottom"))
+  
+
+})
+output$positive_rate_zip <- renderTmap({
+  tm_shape(KCMO)+
+    tm_polygons(col = "Positivity Rate",id = "id_positive_rate", palette = "OrRd",
+                style = "fixed",
+                breaks = c(0, 10, 15, 20, 25,Inf),
+                labels = c("10%", "15%", "20%", "25%", "25% or More"),
+                title = "% Positivity Rate")+
+                # popup.format= list(fun = function(x) paste0(formatC(x, digits = 0, format = "f", " Positivity Rate"))))+
+    tm_layout()+
+    tm_view(view.legend.position = c("left","bottom"))
+  
+})
+
+output$case_commulative <- renderEcharts4r({
+  cases %>% 
+    rename(`Total Cases`= total_cases) %>% 
+    e_chart(x = date) %>% 
+    e_line(serie = `Total Cases`) %>%
+    e_axis_labels(x = "Date") %>% 
+    e_legend(show = F) %>% 
+    e_tooltip(trigger = "axis") %>% 
+    e_theme("chalk")
+   
+})
+  #==# Technical notes 
+  output$technotes <- renderUI({
+    p(h3("Overview of KCMO Health Department COVID-19 Data", br()),
+      h4(tags$li("COVID-19 data are reported as timely, as accurately,
+                                             and as completely as we have available at the time of
+                                          posting each business day. Data are updated as more information is
+                                          received and will change over time as we learn more. ")),
+      h4(tags$li("These metrics are updated on a daily basis, Monday-Friday: total cases,
+                              case rate, total deaths, and death rate.")),
+      h4(tags$li("All other metrics are updated on Wednesday for the prior week (Sunday-Saturday).
+                              Notes on these metrics:")),
+      tags$ul(
+        h4(tags$li(tags$em("The 7-day daily case average reflects the prior week (Sunday-Saturday)"))),
+        h4(tags$li(tags$em("the 14-day daily case average reflects the prior two weeks (Sunday-Saturday)"))),
+        h4(tags$li(tags$em("the 30-day daily case average reflects the 30 days ending with Saturday of the prior week"))),
+        h4(tags$li(tags$em("To account for delays in testing and reporting, the 14-day positivity rate is for the
+                                      two-week period before the prior week. The prior week's positivity rate is shown on the chart
+                                      but is not considered to be a final number.")))),
+      h4(tags$li("For more information on the City's coronavirus/COVID-19 efforts, including current policies,
+                              please visit:",
+                 tags$a(href = "https://www.kcmo.gov/city-hall/departments/health/coronavirus","kcmo.gov/coronavirus"))))
+  })
+  
+  
+  output$site1 <- renderUI({
+    
+  })
+ # <iframe height="400" width="100%" frameborder="no" src="https://datasciencegenie.shinyapps.io/MyShinyApp/"> </iframe>
+}
+shinyApp(ui, server)
+
+
   
 
 })
