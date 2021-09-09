@@ -1,0 +1,150 @@
+---
+title: "KCMO Data Summary"
+output: 
+ flexdashboard::flex_dashboard:
+    css: style.css
+    social: menu
+    source_code: embed
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(lubridate)
+library(echarts4r)
+library(r2d3maps)
+
+```
+
+
+Overview { data-icon="fa fa-eye"}
+==============================
+
+Column {data-width=100}
+-----------------------------------------------------------
+
+### New Cases {.value-box}
+```{r}
+valueBox(247, caption = "Connections", icon="fa-random")
+```
+
+### New Cases {.value-box}
+```{r}
+valueBox(247, caption = "Connections", icon="fa-random")
+```
+
+### New Cases {.value-box}
+```{r}
+valueBox(247, caption = "Connections", icon="fa-random")
+```
+
+### New Cases {.value-box}
+```{r}
+valueBox(247, caption = "Connections", icon="fa-random")
+```
+
+### New Cases {.value-box}
+```{r}
+valueBox(247, caption = "Connections", icon="fa-random")
+```
+
+### New Cases {.value-box}
+```{r}
+valueBox(247, caption = "Connections", icon="fa-random")
+```
+
+### New Cases {.value-box}
+```{r}
+valueBox(247, caption = "Connections", icon="fa-random")
+```
+
+### New Cases {.value-box}
+```{r}
+valueBox(247, caption = "Connections", icon="fa-random")
+```
+
+
+Row {.tabset}
+-----------------------------------------------------------------------
+
+### Tab1
+
+<div style='display:flex; flex-direction:row; justify-content:space-evenly; align-items:center; background:rgb(94, 57, 88)'>
+
+<div>
+```{r}
+
+gauge(42, min = 0, max = 100, symbol = '%', gaugeSectors(
+  success = c(80, 100), warning = c(40, 79), danger = c(0, 39)
+))
+```
+```{r}
+
+gauge(42, min = 0, max = 100, symbol = '%', gaugeSectors(
+  success = c(80, 100), warning = c(40, 79), danger = c(0, 39)
+))
+```
+</div>
+
+<div>
+```{r}
+
+gauge(42, min = 0, max = 100, symbol = '%', gaugeSectors(
+  success = c(80, 100), warning = c(40, 79), danger = c(0, 39)
+))
+```
+
+```{r, results='asis'}
+library(htmltools)
+div(HTML("<h2>I like <u>turtles</u></h2>"))
+
+```
+</div>
+
+</div>
+
+
+
+### Tab2
+Column {data-width=100}
+-----------------------------------------------------------
+<div>
+
+<div>
+#### {.value-box}
+```{r}
+valueBox(247, caption = "Connections", icon="fa-random")
+```
+#### {.value-box}
+```{r}
+valueBox(247, caption = "Connections", icon="fa-random")
+```
+
+</div>
+
+</div>
+
+Death Disparities{data-icon="fa fa-shield"}
+===========================================
+
+
+
+
+
+
+
+Deaths Overtime {data-icon="fa fa-heartbeat"}
+============================================
+
+
+
+
+
+
+
+
+
+Life Expectancy{data-icon="fa fa-plus-circle"}
+==============================================
