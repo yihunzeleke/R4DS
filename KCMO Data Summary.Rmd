@@ -14,7 +14,9 @@ library(flexdashboard)
 library(tidyverse)
 library(lubridate)
 library(echarts4r)
-library(r2d3maps)
+library(leaflet)
+library(RColorBrewer)
+library(htmltools)
 
 ```
 
@@ -76,10 +78,12 @@ Row {.tabset}
 <div>
 ```{r}
 
-gauge(42, min = 0, max = 100, symbol = '%', gaugeSectors(
+gauge(35, min = 0, max = 100, symbol = '%', gaugeSectors(
   success = c(80, 100), warning = c(40, 79), danger = c(0, 39)
 ))
 ```
+</div>
+<div>
 ```{r}
 
 gauge(42, min = 0, max = 100, symbol = '%', gaugeSectors(
@@ -95,36 +99,36 @@ gauge(42, min = 0, max = 100, symbol = '%', gaugeSectors(
   success = c(80, 100), warning = c(40, 79), danger = c(0, 39)
 ))
 ```
-
+</div>
+<div>
 ```{r, results='asis'}
-library(htmltools)
-div(HTML("<h2>I like <u>turtles</u></h2>"))
+gauge(87, min = 0, max = 100, symbol = '%', gaugeSectors(
+  success = c(80, 100), warning = c(40, 79), danger = c(0, 39)
+))
 
 ```
 </div>
 
 </div>
 
+<div style='display:flex; flex-direction:row; justify-content:space-evenly; align-items:center;  margin-top:25px'>
 
+<div>
+My paragraph.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+
+<div style= 'display:flex; flex-direction:row; justify-content:space-evenly; align-items:center;margin-right=50px;'>
+```{r}
+mtcars[1:10,] %>% 
+  knitr::kable()
+```
+</div>
+</div>
+<div style = 'background:aqua;'>
+My paragraph.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+</div>
+</div>
 
 ### Tab2
-Column {data-width=100}
------------------------------------------------------------
-<div>
-
-<div>
-#### {.value-box}
-```{r}
-valueBox(247, caption = "Connections", icon="fa-random")
-```
-#### {.value-box}
-```{r}
-valueBox(247, caption = "Connections", icon="fa-random")
-```
-
-</div>
-
-</div>
 
 Death Disparities{data-icon="fa fa-shield"}
 ===========================================
@@ -148,3 +152,5 @@ Deaths Overtime {data-icon="fa fa-heartbeat"}
 
 Life Expectancy{data-icon="fa fa-plus-circle"}
 ==============================================
+
+
